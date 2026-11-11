@@ -15,5 +15,11 @@
   },
   "engines": {
     "bun": ">=1.4.4"
-  }
+  },
+  "trustedDependencies": [
+    "agent-browser",
+    "edgedriver",
+    "esbuild",
+    "geckodriver"
+  ]
 }
