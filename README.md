@@ -6,8 +6,8 @@ Bun workspace monorepo.
 
 | Package | Path | Description |
 | --- | --- | --- |
-| `agent` | `agent/` | Mastra agent |
-| `tui` | `tui/` | OpenTUI terminal interface |
+| `agent` | `packages/agent/` | Mastra agent |
+| `tui` | `packages/tui/` | OpenTUI terminal interface |
 
 ## Commands
 
@@ -23,4 +23,3 @@ bun run typecheck    # typecheck every workspace
 ```
 
 Workspace dependencies are hoisted to the root `node_modules` and resolved through the single root `bun.lock`.
-# fortune-code
