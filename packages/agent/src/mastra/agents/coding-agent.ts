@@ -5,8 +5,8 @@ import { Memory } from "@mastra/memory";
 import { TaskSignalProvider } from "@mastra/core/signals";
 import { askUserTool, submitPlanTool } from "@mastra/core/tools";
 import { tavilyTools } from "../tools/tavily-tool";
-import { scheduleTools } from "../tools/schedule-tools";
 import { codingWorkspace } from "../workspace/coding-workspace";
+import { scheduleToolSearchProcessor } from "../processors/schedule-tool-search";
 import { createDurableAgent } from "@mastra/core/agent/durable";
 
 const codingAgent = createCodingAgent({
@@ -26,8 +26,10 @@ const codingAgent = createCodingAgent({
       search: { topK: 5, minScore: 0.1 },
       blockingRefresh: true,
     }),
+    // Schedule tools load on demand via search_tools and load_tool.
+    scheduleToolSearchProcessor,
   ],
-  tools: { submitPlanTool, askUserTool, ...tavilyTools, ...scheduleTools },
+  tools: { submitPlanTool, askUserTool, ...tavilyTools },
   signals: [new TaskSignalProvider()],
   memory: new Memory({
     options: {
