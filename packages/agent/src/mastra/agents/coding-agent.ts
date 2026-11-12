@@ -17,7 +17,11 @@ import {
 } from "@mastra/core/processors";
 import { Memory } from "@mastra/memory";
 import { TaskSignalProvider } from "@mastra/core/signals";
-import { askUserTool, submitPlanTool, webFetchTool, webSearchTool } from "@mastra/core/tools";
+import {
+  askUserTool,
+  submitPlanTool,
+  webFetchTool,
+} from "@mastra/core/tools";
 import { createDurableAgent } from "@mastra/core/agent/durable";
 import { codingWorkspace } from "../workspace/coding-workspace";
 import { toolSearchProcessor } from "../processors/tool-search";
@@ -65,7 +69,6 @@ const codingAgent = createCodingAgent({
   tools: {
     ask_user: askUserTool,
     submit_plan: submitPlanTool,
-    web_search: webSearchTool,
     web_fetch: webFetchTool,
   },
   signals: [new TaskSignalProvider()],
