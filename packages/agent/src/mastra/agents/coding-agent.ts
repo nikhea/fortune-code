@@ -12,6 +12,7 @@ import {
 import { Memory } from "@mastra/memory";
 import { TaskSignalProvider } from "@mastra/core/signals";
 import { askUserTool, submitPlanTool } from "@mastra/core/tools";
+import { createDurableAgent } from "@mastra/core/agent/durable";
 import { tavilyTools } from "../tools/tavily-tool";
 import { codingWorkspace } from "../workspace/coding-workspace";
 import { scheduleToolSearchProcessor } from "../processors/schedule-tool-search";
@@ -22,7 +23,6 @@ import {
   responseCacheProcessor,
   unicodeNormalizer,
 } from "../processors/coding-agent-processors";
-import { createDurableAgent } from "@mastra/core/agent/durable";
 
 const codingAgent = createCodingAgent({
   id: "coding-agent",

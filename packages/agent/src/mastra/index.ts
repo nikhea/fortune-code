@@ -19,6 +19,12 @@ import {
 import { codingAgent, durableCodingAgent } from "./agents/coding-agent";
 import { createCodingAgentSession } from "./controller/coding-agent-controller";
 import { scheduleTools } from "./tools/schedule-tools";
+import { codingWorkspace } from "./workspace/coding-workspace";
+
+// Search only indexes files during init(), so autoIndexPaths (skills) must be
+// loaded before the first agent run. Re-running init() rebuilds the index
+// instead of duplicating entries.
+await codingWorkspace.init();
 
 const codingAgentController = await createCodingAgentSession();
 export const mastra = new Mastra({
