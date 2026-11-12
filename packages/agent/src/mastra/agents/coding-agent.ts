@@ -1,13 +1,19 @@
 import { createCodingAgent } from "@mastra/core/coding-agent";
 import { codingAgentBaseConfig } from "../lib/config";
 import { scheduleInstructions } from "../instructions/schedule.instruction";
-import { SkillSearchProcessor, StreamErrorRetryProcessor } from "@mastra/core/processors";
+import { SkillSearchProcessor, CyberRefusalHandler, StreamErrorRetryProcessor } from "@mastra/core/processors";
 import { Memory } from "@mastra/memory";
 import { TaskSignalProvider } from "@mastra/core/signals";
 import { askUserTool, submitPlanTool } from "@mastra/core/tools";
 import { tavilyTools } from "../tools/tavily-tool";
 import { codingWorkspace } from "../workspace/coding-workspace";
 import { scheduleToolSearchProcessor } from "../processors/schedule-tool-search";
+import {
+  agentsMdInjector,
+  batchPartsProcessor,
+  fileUploadProcessor,
+  responseCacheProcessor,
+} from "../processors/coding-agent-processors";
 import { createDurableAgent } from "@mastra/core/agent/durable";
 
 const codingAgent = createCodingAgent({
@@ -30,7 +36,14 @@ const codingAgent = createCodingAgent({
     }),
     // Schedule tools load on demand via search_tools and load_tool.
     scheduleToolSearchProcessor,
+    // Picks up nested AGENTS.md files from directories the agent works in.
+    agentsMdInjector,
+    // Sends unreadable attachments to the sandbox instead of the model.
+    fileUploadProcessor,
+    // Caches model responses per prompt and step.
+    responseCacheProcessor,
   ],
+  outputProcessors: [batchPartsProcessor, new CyberRefusalHandler()],
   tools: { submitPlanTool, askUserTool, ...tavilyTools },
   signals: [new TaskSignalProvider()],
   memory: new Memory({
