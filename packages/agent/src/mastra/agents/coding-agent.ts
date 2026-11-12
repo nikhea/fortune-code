@@ -1,7 +1,14 @@
 import { createCodingAgent } from "@mastra/core/coding-agent";
 import { codingAgentBaseConfig } from "../lib/config";
 import { scheduleInstructions } from "../instructions/schedule.instruction";
-import { SkillSearchProcessor, CyberRefusalHandler, StreamErrorRetryProcessor } from "@mastra/core/processors";
+import {
+  CyberRefusalHandler,
+  PrefillErrorHandler,
+  ProviderHistoryCompat,
+  SkillSearchProcessor,
+  StreamErrorRetryProcessor,
+  UnsupportedFileHandler,
+} from "@mastra/core/processors";
 import { Memory } from "@mastra/memory";
 import { TaskSignalProvider } from "@mastra/core/signals";
 import { askUserTool, submitPlanTool } from "@mastra/core/tools";
@@ -52,6 +59,13 @@ const codingAgent = createCodingAgent({
     },
   }),
   errorProcessors: [
+    // Repair processors run first; each can short-circuit with a retry.
+    new ProviderHistoryCompat(),
+    new PrefillErrorHandler(),
+    new UnsupportedFileHandler(),
+    // Must come before StreamErrorRetryProcessor so a refusal is nudged
+    // instead of resending the same rejected request.
+    new CyberRefusalHandler(),
     new StreamErrorRetryProcessor({
       retryUnknownErrors: true,
       maxRetries: 5,
