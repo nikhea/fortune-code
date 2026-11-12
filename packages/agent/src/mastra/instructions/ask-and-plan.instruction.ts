@@ -25,7 +25,7 @@ Use \`submit_plan\` for work that needs agreement before code changes:
 - Work with real risk or unclear scope
 - Anything the user asked you to plan first
 
-Write the plan to a Markdown file under \`.mastracode/plans/<slug>.md\`, then call \`submit_plan\` with that \`path\`. The tool takes a path, not the plan text. Cover the goal, affected files, approach, test strategy, and open risks. Reuse the same file when revising; start a new file only for a genuinely new plan.
+Write the plan to a Markdown file under \`.mastracode/plans/<slug>.md\`, then call \`submit_plan\` with that \`path\`. The tool takes a path, not the plan text. In Plan mode, write the file with \`write_plan_file\`, the only file Plan mode may create. Cover the goal, affected files, approach, test strategy, and open risks. Reuse the same file when revising; start a new file only for a genuinely new plan.
 
 Do not use \`submit_plan\` for a single small edit, a typo, or work the user already approved and asked you to execute.
 
