@@ -1,5 +1,6 @@
 import { createCodingAgent } from "@mastra/core/coding-agent";
 import { codingAgentBaseConfig } from "../lib/config";
+import { scheduleInstructions } from "../instructions/schedule.instruction";
 import { SkillSearchProcessor, StreamErrorRetryProcessor } from "@mastra/core/processors";
 import { Memory } from "@mastra/memory";
 import { TaskSignalProvider } from "@mastra/core/signals";
@@ -15,6 +16,7 @@ const codingAgent = createCodingAgent({
   model: codingAgentBaseConfig.model,
   instructions: [
     { role: "system", content: codingAgentBaseConfig.instructions },
+    { role: "system", content: scheduleInstructions },
   ],
   basePath: codingAgentBaseConfig.projectPath,
   workspace: codingWorkspace,
