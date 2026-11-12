@@ -4,9 +4,21 @@ import {
   BatchPartsProcessor,
   FileUploadProcessor,
   ResponseCache,
+  UnicodeNormalizer,
 } from "@mastra/core/processors";
 import { codingAgentBaseConfig } from "../lib/config";
 import { codingWorkspace } from "../workspace/coding-workspace";
+
+/**
+ * Normalizes incoming text to NFKC, strips control characters, collapses
+ * whitespace, and trims, so prompts reach the model in a consistent shape.
+ */
+export const unicodeNormalizer = new UnicodeNormalizer({
+  stripControlChars: true,
+  preserveEmojis: true,
+  collapseWhitespace: true,
+  trim: true,
+});
 
 /**
  * Loads AGENTS.md / CLAUDE.md / CONTEXT.md from the directory ancestry of the

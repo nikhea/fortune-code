@@ -20,6 +20,7 @@ import {
   batchPartsProcessor,
   fileUploadProcessor,
   responseCacheProcessor,
+  unicodeNormalizer,
 } from "../processors/coding-agent-processors";
 import { createDurableAgent } from "@mastra/core/agent/durable";
 
@@ -34,6 +35,8 @@ const codingAgent = createCodingAgent({
   basePath: codingAgentBaseConfig.projectPath,
   workspace: codingWorkspace,
   inputProcessors: [
+    // Normalize incoming text before anything else reads it.
+    unicodeNormalizer,
     // On-demand skill discovery: exposes search_skills and load_skill instead
     // of injecting every skill into the system prompt.
     new SkillSearchProcessor({
