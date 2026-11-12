@@ -4,7 +4,6 @@ import { scheduleInstructions } from "../instructions/schedule.instruction";
 import { webInstructions } from "../instructions/web.instruction";
 import { askAndPlanInstructions } from "../instructions/ask-and-plan.instruction";
 import {
-  projectMemoryTemplate,
   workingMemoryInstructions,
 } from "../instructions/working-memory.instruction";
 import {
@@ -15,15 +14,11 @@ import {
   StreamErrorRetryProcessor,
   UnsupportedFileHandler,
 } from "@mastra/core/processors";
-import { Memory } from "@mastra/memory";
 import { TaskSignalProvider } from "@mastra/core/signals";
-import {
-  askUserTool,
-  submitPlanTool,
-  webFetchTool,
-} from "@mastra/core/tools";
+import { askUserTool, submitPlanTool, webFetchTool } from "@mastra/core/tools";
 import { createDurableAgent } from "@mastra/core/agent/durable";
 import { codingWorkspace } from "../workspace/coding-workspace";
+import { codingAgentMemory } from "../memory/coding-agent-memory";
 import { toolSearchProcessor } from "../processors/tool-search";
 import { webSearchTool } from "../tools/web-tools";
 import {
@@ -74,27 +69,7 @@ const codingAgent = createCodingAgent({
     web_fetch: webFetchTool,
   },
   signals: [new TaskSignalProvider()],
-  memory: new Memory({
-    options: {
-      lastMessages: 20,
-      // Project notes persist across every thread that shares this resourceId,
-      // which the controller sets to the project path. Delivered as a
-      // `working-memory` state signal instead of being folded into the system
-      // prompt; writes go through the `setWorkingMemory` tool.
-      workingMemory: {
-        enabled: true,
-        scope: "resource",
-        useStateSignals: true,
-        template: projectMemoryTemplate,
-      },
-      // Non-blocking thread titles for clients that list conversations.
-      generateTitle: {
-        model: process.env.JUDGE_MODEL ?? codingAgentBaseConfig.model,
-        instructions:
-          "Name the coding task in this thread in six words or fewer. Mention the feature or file, not the conversation.",
-      },
-    },
-  }),
+  memory: codingAgentMemory,
   errorProcessors: [
     // Repair processors run first; each can short-circuit with a retry.
     new ProviderHistoryCompat(),
@@ -110,7 +85,7 @@ const codingAgent = createCodingAgent({
     }),
   ],
   goal: {
-    judge: process.env.JUDGE_MODEL,
+    judge: process.env.JUDGE_MODEL ?? codingAgentBaseConfig.model,
     maxRuns: parseInt(process.env.MAX_RUNS || "50"),
   },
   defaultOptions: {

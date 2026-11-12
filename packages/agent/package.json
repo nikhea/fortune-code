@@ -36,6 +36,7 @@
     "@mastra/mcp": "^2.8.0",
     "@mastra/memory": "^1.41.0",
     "@mastra/observability": "^1.23.1",
+    "@mastra/pg": "^1.35.0",
     "@mastra/quickjs": "^0.1.5",
     "@mastra/rag": "^2.7.2",
     "@mastra/tavily": "^1.1.3",
