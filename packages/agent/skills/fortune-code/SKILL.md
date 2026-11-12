@@ -10,7 +10,7 @@ description: "Guide to the Fortune Code agent package: source layout, scripts, e
 - `src/mastra/index.ts` — the Mastra instance. Register every agent, tool, workflow, and scorer here.
 - `src/mastra/agents/` — agent definitions (`coding-agent.ts`, `weather-agent.ts`).
 - `src/mastra/controller/` — `AgentController` setup and sessions.
-- `src/mastra/tools/` — custom tools (`tavily-tool.ts`, `schedule-tools.ts`, `weather-tool.ts`).
+- `src/mastra/tools/` — custom tools (`web-tools.ts`, `schedule-tools.ts`, `weather-tool.ts`).
 - `src/mastra/workspace/` — the coding workspace (filesystem, sandbox, search, LSP, skills).
 - `src/mastra/lib/config.ts` — shared agent config and the base prompt.
 - `skills/` — workspace skills, discovered on demand.

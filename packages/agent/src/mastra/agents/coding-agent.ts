@@ -17,9 +17,8 @@ import { Memory } from "@mastra/memory";
 import { TaskSignalProvider } from "@mastra/core/signals";
 import { askUserTool, submitPlanTool } from "@mastra/core/tools";
 import { createDurableAgent } from "@mastra/core/agent/durable";
-import { tavilyTools } from "../tools/tavily-tool";
 import { codingWorkspace } from "../workspace/coding-workspace";
-import { scheduleToolSearchProcessor } from "../processors/schedule-tool-search";
+import { toolSearchProcessor } from "../processors/tool-search";
 import {
   agentsMdInjector,
   batchPartsProcessor,
@@ -49,8 +48,8 @@ const codingAgent = createCodingAgent({
       search: { topK: 5, minScore: 0.1 },
       blockingRefresh: true,
     }),
-    // Schedule tools load on demand via search_tools and load_tool.
-    scheduleToolSearchProcessor,
+    // Schedule and web tools load on demand via search_tools (no load_tool).
+    toolSearchProcessor,
     // Picks up nested AGENTS.md files from directories the agent works in.
     agentsMdInjector,
     // Sends unreadable attachments to the sandbox instead of the model.
@@ -59,7 +58,7 @@ const codingAgent = createCodingAgent({
     responseCacheProcessor,
   ],
   outputProcessors: [batchPartsProcessor, new CyberRefusalHandler()],
-  tools: { submitPlanTool, askUserTool, ...tavilyTools },
+  tools: { submitPlanTool, askUserTool },
   signals: [new TaskSignalProvider()],
   memory: new Memory({
     options: {

@@ -23,6 +23,7 @@ const codingAgentInstructions = buildBasePrompt({
 - Use write_file, edit_file, and file_stat for writing, editing, and inspecting file metadata.
 - Use search for indexed search and lsp_inspect for language-server diagnostics.
 - Use search_skills and load_skill to find and load workspace skills on demand.
+- Use search_tools to activate the web tools (\`web-search\`, \`web-extract\`, \`web-crawl\`, \`web-map\`); there is no separate load step.
 - Use only the workspace tools provided to you. Do not attempt unavailable capabilities.`,
 });
 

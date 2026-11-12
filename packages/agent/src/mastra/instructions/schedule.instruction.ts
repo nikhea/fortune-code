@@ -1,6 +1,6 @@
 export const scheduleInstructions = `# Schedule tools
 
-You can schedule recurring work for yourself. The schedule tools are not loaded into the prompt by default: call \`search_tools\` with a query such as "schedule cron reminder", then call \`load_tool\` with the tool name to activate it for this thread.
+You can schedule recurring work for yourself. The schedule tools are not loaded into the prompt by default: call \`search_tools\` with a query such as "schedule cron reminder", and every matching tool is activated immediately for this thread. There is no separate load step.
 
 Available schedule tools:
 
