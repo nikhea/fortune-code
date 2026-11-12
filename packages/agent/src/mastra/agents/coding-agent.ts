@@ -1,6 +1,8 @@
 import { createCodingAgent } from "@mastra/core/coding-agent";
 import { codingAgentBaseConfig } from "../lib/config";
 import { scheduleInstructions } from "../instructions/schedule.instruction";
+import { webInstructions } from "../instructions/web.instruction";
+import { askAndPlanInstructions } from "../instructions/ask-and-plan.instruction";
 import {
   projectMemoryTemplate,
   workingMemoryInstructions,
@@ -15,7 +17,7 @@ import {
 } from "@mastra/core/processors";
 import { Memory } from "@mastra/memory";
 import { TaskSignalProvider } from "@mastra/core/signals";
-import { askUserTool, submitPlanTool } from "@mastra/core/tools";
+import { askUserTool, submitPlanTool, webFetchTool, webSearchTool } from "@mastra/core/tools";
 import { createDurableAgent } from "@mastra/core/agent/durable";
 import { codingWorkspace } from "../workspace/coding-workspace";
 import { toolSearchProcessor } from "../processors/tool-search";
@@ -33,7 +35,9 @@ const codingAgent = createCodingAgent({
   model: codingAgentBaseConfig.model,
   instructions: [
     { role: "system", content: codingAgentBaseConfig.instructions },
+    { role: "system", content: askAndPlanInstructions },
     { role: "system", content: scheduleInstructions },
+    { role: "system", content: webInstructions },
     { role: "system", content: workingMemoryInstructions },
   ],
   basePath: codingAgentBaseConfig.projectPath,
@@ -58,7 +62,12 @@ const codingAgent = createCodingAgent({
     responseCacheProcessor,
   ],
   outputProcessors: [batchPartsProcessor, new CyberRefusalHandler()],
-  tools: { submitPlanTool, askUserTool },
+  tools: {
+    ask_user: askUserTool,
+    submit_plan: submitPlanTool,
+    web_search: webSearchTool,
+    web_fetch: webFetchTool,
+  },
   signals: [new TaskSignalProvider()],
   memory: new Memory({
     options: {
