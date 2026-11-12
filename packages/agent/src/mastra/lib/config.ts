@@ -1,9 +1,9 @@
 import { basename } from "node:path";
-import { buildBasePrompt, createCodingAgent } from "@mastra/core/coding-agent";
+import { buildBasePrompt } from "@mastra/core/coding-agent";
 
 const projectPath = process.cwd();
 
-const model = "openai/gpt-6.1-sol";
+const model = process.env.MAIN_MODEL!;
 
 const codingAgentInstructions = buildBasePrompt({
   projectPath,
@@ -12,9 +12,9 @@ const codingAgentInstructions = buildBasePrompt({
   date: new Date().toISOString().slice(0, 10),
   mode: "build",
   modelId: model,
-  productName: "Fortune Code",
-  coAuthorName: "imonikhea ugbodaga",
-  coAuthorEmail: "imonikheaugbodaga@gmail.com",
+  productName: process.env.PRODUCT_NAME,
+  coAuthorName: process.env.CO_AUTHOR_NAME,
+  coAuthorEmail: process.env.CO_AUTHOR_EMAIL,
   toolGuidance: `# Workspace tools
 - Use mastra_workspace_read_file for view.
 - Use mastra_workspace_list_files for find_files.

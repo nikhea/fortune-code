@@ -4,19 +4,17 @@ import { StreamErrorRetryProcessor } from "@mastra/core/processors";
 import { Memory } from "@mastra/memory";
 import { TaskSignalProvider } from "@mastra/core/signals";
 import { askUserTool, submitPlanTool } from "@mastra/core/tools";
+import { tavilyTools } from "../tools/tavily-tool";
 
 export const codingAgent = createCodingAgent({
   id: "coding-agent",
   name: "Coding Agent",
   model: codingAgentBaseConfig.model,
   instructions: [
-    {
-      role: "system",
-      content: codingAgentBaseConfig.instructions,
-    },
+    { role: "system", content: codingAgentBaseConfig.instructions },
   ],
   basePath: codingAgentBaseConfig.projectPath,
-  tools: { submitPlanTool, askUserTool },
+  tools: { submitPlanTool, askUserTool, ...tavilyTools },
   signals: [new TaskSignalProvider()],
   memory: new Memory({
     options: {
@@ -31,11 +29,10 @@ export const codingAgent = createCodingAgent({
     }),
   ],
   goal: {
-    judge: "anthropic/claude-haiku-5-5",
-    maxRuns: 50,
-    prompt: "Return `complete` when the code compiles and tests pass.",
+    judge: process.env.JUDGE_MODEL,
+    maxRuns: parseInt(process.env.MAX_RUNS || "50"),
   },
   defaultOptions: {
-    maxSteps: 50,
+    maxSteps: parseInt(process.env.MAX_STEPS || "100"),
   },
 });
