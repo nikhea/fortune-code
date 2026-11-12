@@ -39,7 +39,7 @@ export const codingWorkspace = new Workspace({
     [WORKSPACE_TOOLS.FILESYSTEM.FILE_STAT]: { name: "file_stat" },
     [WORKSPACE_TOOLS.FILESYSTEM.MKDIR]: { name: "mkdir" },
     [WORKSPACE_TOOLS.FILESYSTEM.GREP]: { name: "grep" },
-    [WORKSPACE_TOOLS.FILESYSTEM.APPLY_PATCH]: { name: "apply_patch" },
+    [WORKSPACE_TOOLS.FILESYSTEM.APPLY_PATCH]: { name: "apply_patch", enabled: true },
     [WORKSPACE_TOOLS.SANDBOX.EXECUTE_COMMAND]: { name: "execute_command" },
     [WORKSPACE_TOOLS.SANDBOX.GET_PROCESS_OUTPUT]: { name: "get_process_output" },
     [WORKSPACE_TOOLS.SANDBOX.KILL_PROCESS]: { name: "kill_process" },
