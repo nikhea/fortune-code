@@ -1,6 +1,6 @@
 import { createCodingAgent } from "@mastra/core/coding-agent";
 import { codingAgentBaseConfig } from "../lib/config";
-import { StreamErrorRetryProcessor } from "@mastra/core/processors";
+import { SkillSearchProcessor, StreamErrorRetryProcessor } from "@mastra/core/processors";
 import { Memory } from "@mastra/memory";
 import { TaskSignalProvider } from "@mastra/core/signals";
 import { askUserTool, submitPlanTool } from "@mastra/core/tools";
@@ -18,6 +18,15 @@ const codingAgent = createCodingAgent({
   ],
   basePath: codingAgentBaseConfig.projectPath,
   workspace: codingWorkspace,
+  inputProcessors: [
+    // On-demand skill discovery: exposes search_skills and load_skill instead
+    // of injecting every skill into the system prompt.
+    new SkillSearchProcessor({
+      workspace: codingWorkspace,
+      search: { topK: 5, minScore: 0.1 },
+      blockingRefresh: true,
+    }),
+  ],
   tools: { submitPlanTool, askUserTool, ...tavilyTools, ...scheduleTools },
   signals: [new TaskSignalProvider()],
   memory: new Memory({

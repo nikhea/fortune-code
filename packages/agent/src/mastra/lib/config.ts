@@ -16,11 +16,13 @@ const codingAgentInstructions = buildBasePrompt({
   coAuthorName: process.env.CO_AUTHOR_NAME,
   coAuthorEmail: process.env.CO_AUTHOR_EMAIL,
   toolGuidance: `# Workspace tools
-- Use mastra_workspace_read_file for view.
-- Use mastra_workspace_list_files for find_files.
-- Use mastra_workspace_grep for search_content.
-- Use mastra_workspace_execute_command for execute_command.
-- Use mastra_workspace_write_file, mastra_workspace_edit_file, and mastra_workspace_file_stat for writing, editing, and inspecting file metadata.
+- Use read_file for view.
+- Use list_files for find_files.
+- Use grep for search_content.
+- Use execute_command for execute_command.
+- Use write_file, edit_file, and file_stat for writing, editing, and inspecting file metadata.
+- Use search for indexed search and lsp_inspect for language-server diagnostics.
+- Use search_skills and load_skill to find and load workspace skills on demand.
 - Use only the workspace tools provided to you. Do not attempt unavailable capabilities.`,
 });
 
