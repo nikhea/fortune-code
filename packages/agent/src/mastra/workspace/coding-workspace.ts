@@ -30,16 +30,22 @@ export const codingWorkspace = new Workspace({
   // LSP server, so no separate typescript-language-server is required.
   lsp: true,
   tools: {
-    // Drop the `mastra_workspace_` prefix from every workspace tool name.
-    [WORKSPACE_TOOLS.FILESYSTEM.READ_FILE]: { name: "read_file" },
+    // Drop the `mastra_workspace_` prefix from every workspace tool name and
+    // line the names up with the Mastra Code tool set.
+    [WORKSPACE_TOOLS.FILESYSTEM.READ_FILE]: { name: "view" },
     [WORKSPACE_TOOLS.FILESYSTEM.WRITE_FILE]: { name: "write_file" },
-    [WORKSPACE_TOOLS.FILESYSTEM.EDIT_FILE]: { name: "edit_file" },
-    [WORKSPACE_TOOLS.FILESYSTEM.LIST_FILES]: { name: "list_files" },
+    [WORKSPACE_TOOLS.FILESYSTEM.EDIT_FILE]: { name: "string_replace_lsp" },
+    [WORKSPACE_TOOLS.FILESYSTEM.LIST_FILES]: { name: "find_files" },
     [WORKSPACE_TOOLS.FILESYSTEM.DELETE]: { name: "delete" },
     [WORKSPACE_TOOLS.FILESYSTEM.FILE_STAT]: { name: "file_stat" },
     [WORKSPACE_TOOLS.FILESYSTEM.MKDIR]: { name: "mkdir" },
-    [WORKSPACE_TOOLS.FILESYSTEM.GREP]: { name: "grep" },
+    [WORKSPACE_TOOLS.FILESYSTEM.GREP]: { name: "search_content" },
     [WORKSPACE_TOOLS.FILESYSTEM.APPLY_PATCH]: { name: "apply_patch", enabled: true },
+    // AST-aware edits need the optional @ast-grep/napi dependency.
+    [WORKSPACE_TOOLS.FILESYSTEM.AST_EDIT]: {
+      name: "ast_smart_edit",
+      enabled: true,
+    },
     [WORKSPACE_TOOLS.SANDBOX.EXECUTE_COMMAND]: { name: "execute_command" },
     [WORKSPACE_TOOLS.SANDBOX.GET_PROCESS_OUTPUT]: { name: "get_process_output" },
     [WORKSPACE_TOOLS.SANDBOX.KILL_PROCESS]: { name: "kill_process" },

@@ -32,7 +32,7 @@ Never call `mastra dev` or `mastra build` directly; use the package scripts.
 
 ## Workspace tools
 
-Workspace tools drop the `mastra_workspace_` prefix: `read_file`, `write_file`, `edit_file`, `list_files`, `delete`, `file_stat`, `mkdir`, `grep`, `execute_command`, `search`, `index`, and `lsp_inspect`.
+Workspace tools drop the `mastra_workspace_` prefix: `view`, `write_file`, `string_replace_lsp`, `find_files`, `delete`, `file_stat`, `mkdir`, `search_content`, `apply_patch`, `ast_smart_edit`, `execute_command`, `get_process_output`, `kill_process`, `search`, `index`, and `lsp_inspect`.
 
 ## Conventions
 

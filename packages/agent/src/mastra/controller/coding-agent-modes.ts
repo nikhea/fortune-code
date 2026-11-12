@@ -21,55 +21,130 @@ export const modeModels = {
 };
 
 /**
- * Workspace tools as the model sees them. The workspace renames them in
- * `coding-workspace.ts`, and these are the renamed names.
+ * The tool set, split by what a tool does to the project. The names are the
+ * ones the model sees: the workspace renames its tools in
+ * `coding-workspace.ts`, and everything else is registered under its own id.
  */
-const READ_WORKSPACE_TOOLS = [
-  "read_file",
-  "grep",
-  "list_files",
+
+/** Workspace tools that read the project without changing it. */
+const READ_TOOLS = [
+  "view",
+  "search_content",
+  "find_files",
   "file_stat",
   "lsp_inspect",
   "search",
-] as const;
+];
 
-const WRITE_WORKSPACE_TOOLS = [
+/** Workspace tools that change the project. */
+const WRITE_TOOLS = [
   "write_file",
-  "edit_file",
+  "string_replace_lsp",
+  "ast_smart_edit",
   "apply_patch",
   "mkdir",
   "delete",
-] as const;
+];
 
-/**
- * Plan mode reads the project, tracks the work, talks to the user, and writes
- * exactly one thing: the plan file it submits.
- */
-const PLAN_TOOLS = [
-  ...READ_WORKSPACE_TOOLS,
-  "ask_user",
-  "submit_plan",
-  "write_plan_file",
+/** Tools that run commands in the sandbox. */
+const SHELL_TOOLS = [
+  "execute_command",
+  "get_process_output",
+  "kill_process",
+];
+
+/** Web tools, plus the meta tool that activates the ones held back. */
+const WEB_TOOLS = [
+  "web_search",
+  "web_fetch",
+  "web_extract",
+  "web_crawl",
+  "web_map",
+  "search_tools",
+];
+
+/** Schedule tools, activated on demand through `search_tools`. */
+const SCHEDULE_TOOLS = [
+  "schedule_create",
+  "schedule_list",
+  "schedule_get",
+  "schedule_update",
+  "schedule_pause",
+  "schedule_resume",
+  "schedule_run",
+  "schedule_delete",
+  "schedule_triggers",
+];
+
+/** Task tracking. */
+const TASK_TOOLS = [
   "task_write",
   "task_update",
   "task_complete",
   "task_check",
-  "search_skills",
-  "load_skill",
-  "recall",
-  "web-search",
-  "web_fetch",
+];
+
+/** Skills, memory, and the tools that reach the conversation's context. */
+const CONTEXT_TOOLS = ["search_skills", "load_skill", "recall"];
+
+/** Reading the workflows registered on the server. */
+const WORKFLOW_READ_TOOLS = ["list-workflows", "get-workflow"];
+
+/** Creating, running, and deleting workflows. */
+const WORKFLOW_WRITE_TOOLS = [
+  "create-workflow",
+  "run-workflow",
+  "delete-workflow",
 ];
 
 /**
- * Explore mode answers questions. It reads the project, loads the skills that
- * explain it, and recalls earlier context. Nothing else.
+ * Build changes the project. It is the only mode that writes files, runs
+ * commands, or reaches the web, and it is the only mode that can spawn a
+ * subagent. `submit_plan` is Plan mode's tool, so it is not here.
+ */
+const BUILD_TOOLS = [
+  ...READ_TOOLS,
+  ...WRITE_TOOLS,
+  ...SHELL_TOOLS,
+  ...WEB_TOOLS,
+  ...SCHEDULE_TOOLS,
+  ...TASK_TOOLS,
+  ...CONTEXT_TOOLS,
+  ...WORKFLOW_READ_TOOLS,
+  ...WORKFLOW_WRITE_TOOLS,
+  "index",
+  "update-working-memory",
+  "ask_user",
+  "request_access",
+  "notification_inbox",
+  "subagent",
+];
+
+/**
+ * Plan reads the project, tracks the work, and talks to the user. The only
+ * file it may write is the plan it submits, so the write tools of the backing
+ * agent stay out of the mode. `write_plan_file` takes their place.
+ */
+const PLAN_TOOLS = [
+  ...READ_TOOLS,
+  ...TASK_TOOLS,
+  ...CONTEXT_TOOLS,
+  ...WORKFLOW_READ_TOOLS,
+  "write_plan_file",
+  "ask_user",
+  "submit_plan",
+  "notification_inbox",
+];
+
+/**
+ * Explore answers questions about the codebase. It reads and it recalls; it
+ * does not track tasks, reach the web, or change anything.
  */
 const EXPLORE_TOOLS = [
-  ...READ_WORKSPACE_TOOLS,
-  "search_skills",
-  "load_skill",
-  "recall",
+  ...READ_TOOLS,
+  ...CONTEXT_TOOLS,
+  ...WORKFLOW_READ_TOOLS,
+  "ask_user",
 ];
 
 /**
@@ -89,6 +164,7 @@ export const codingAgentModes: AgentControllerMode[] = [
     metadata: { default: true },
     defaultModelId: modeModels.build,
     instructions: buildModeInstructions,
+    availableTools: BUILD_TOOLS,
   },
   {
     id: "plan",
@@ -98,8 +174,6 @@ export const codingAgentModes: AgentControllerMode[] = [
     transitionsTo: "build",
     defaultModelId: modeModels.plan,
     instructions: planModeInstructions,
-    // Plan mode may not touch the project, so the write tools of the backing
-    // agent are hidden and only the plan file stays writable.
     availableTools: PLAN_TOOLS,
     additionalTools: { write_plan_file: writePlanFileTool },
   },
@@ -137,7 +211,7 @@ export const codingAgentSubagents: AgentControllerSubagent[] = [
     description:
       "Read-only exploration. Use it to find usages of a symbol or to explain how a module works.",
     instructions: exploreSubagentInstructions,
-    allowedWorkspaceTools: [...READ_WORKSPACE_TOOLS],
+    allowedWorkspaceTools: ["view", "search_content", "find_files", "file_stat", "lsp_inspect", "search"],
     defaultModelId: modeModels.explore,
   },
   {
@@ -146,7 +220,7 @@ export const codingAgentSubagents: AgentControllerSubagent[] = [
     description:
       "Read-only analysis. Use it to design an implementation or to break down an architecture.",
     instructions: planSubagentInstructions,
-    allowedWorkspaceTools: [...READ_WORKSPACE_TOOLS],
+    allowedWorkspaceTools: ["view", "search_content", "find_files", "file_stat", "lsp_inspect", "search"],
     defaultModelId: modeModels.plan,
   },
   {
@@ -156,11 +230,9 @@ export const codingAgentSubagents: AgentControllerSubagent[] = [
       "Implements a change. Use it for a feature, a bug fix, or a refactor.",
     instructions: executeSubagentInstructions,
     allowedWorkspaceTools: [
-      ...READ_WORKSPACE_TOOLS,
-      ...WRITE_WORKSPACE_TOOLS,
-      "execute_command",
-      "get_process_output",
-      "kill_process",
+      ...READ_TOOLS,
+      ...WRITE_TOOLS,
+      ...SHELL_TOOLS,
     ],
     defaultModelId: modeModels.build,
   },

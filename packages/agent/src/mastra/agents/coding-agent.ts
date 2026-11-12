@@ -3,9 +3,7 @@ import { codingAgentBaseConfig } from "../lib/config";
 import { scheduleInstructions } from "../instructions/schedule.instruction";
 import { webInstructions } from "../instructions/web.instruction";
 import { askAndPlanInstructions } from "../instructions/ask-and-plan.instruction";
-import {
-  workingMemoryInstructions,
-} from "../instructions/working-memory.instruction";
+import { workingMemoryInstructions } from "../instructions/working-memory.instruction";
 import {
   CyberRefusalHandler,
   PrefillErrorHandler,
@@ -14,13 +12,26 @@ import {
   StreamErrorRetryProcessor,
   UnsupportedFileHandler,
 } from "@mastra/core/processors";
+import { AgentBrowser } from "@mastra/agent-browser";
+
 import { TaskSignalProvider } from "@mastra/core/signals";
 import { askUserTool, submitPlanTool, webFetchTool } from "@mastra/core/tools";
 import { createDurableAgent } from "@mastra/core/agent/durable";
+import { GithubSignals } from "@mastra/github-signals";
+
 import { codingWorkspace } from "../workspace/coding-workspace";
 import { codingAgentMemory } from "../memory/coding-agent-memory";
 import { toolSearchProcessor } from "../processors/tool-search";
 import { webSearchTool } from "../tools/web-tools";
+import { requestAccessTool } from "../tools/access-tools";
+import { notificationInboxTool } from "../tools/notification-tools";
+import {
+  listWorkflowsTool,
+  getWorkflowTool,
+  createWorkflowTool,
+  runWorkflowTool,
+  deleteWorkflowTool,
+} from "../tools/workflow-tools";
 import {
   agentsMdInjector,
   batchPartsProcessor,
@@ -28,6 +39,10 @@ import {
   responseCacheProcessor,
   unicodeNormalizer,
 } from "../processors/coding-agent-processors";
+
+export const browser = new AgentBrowser({
+  headless: false,
+});
 
 const codingAgent = createCodingAgent({
   id: "coding-agent",
@@ -65,11 +80,22 @@ const codingAgent = createCodingAgent({
   tools: {
     ask_user: askUserTool,
     submit_plan: submitPlanTool,
-    "web-search": webSearchTool,
+    web_search: webSearchTool,
     web_fetch: webFetchTool,
+    request_access: requestAccessTool,
+    notification_inbox: notificationInboxTool,
+    "list-workflows": listWorkflowsTool,
+    "get-workflow": getWorkflowTool,
+    "create-workflow": createWorkflowTool,
+    "run-workflow": runWorkflowTool,
+    "delete-workflow": deleteWorkflowTool,
   },
-  signals: [new TaskSignalProvider()],
+  signals: [
+    new TaskSignalProvider(),
+    new GithubSignals({ pollIntervalMs: 5 * 60 * 1000 }),
+  ],
   memory: codingAgentMemory,
+  browser,
   errorProcessors: [
     // Repair processors run first; each can short-circuit with a retry.
     new ProviderHistoryCompat(),
