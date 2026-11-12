@@ -1,4 +1,5 @@
 import { Mastra } from "@mastra/core/mastra";
+import { MastraEditor } from "@mastra/editor";
 import { PinoLogger } from "@mastra/loggers";
 import { LibSQLStore } from "@mastra/libsql";
 import { DuckDBStore } from "@mastra/duckdb";
@@ -32,6 +33,9 @@ export const mastra = new Mastra({
   agents: { weatherAgent, codingAgent, durableCodingAgent },
   tools: { ...scheduleTools },
   agentControllers: { codingAgentController: codingAgentController.controller },
+  // Lets Studio collaborators override instructions and manage tools without
+  // touching the codebase. Stored versions use the Mastra storage below.
+  editor: new MastraEditor(),
   scorers: {
     toolCallAppropriatenessScorer,
     completenessScorer,

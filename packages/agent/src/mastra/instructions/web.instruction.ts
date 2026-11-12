@@ -2,11 +2,11 @@ export const webInstructions = `# Web tools
 
 Directly available:
 
+- \`web-search\` — web search. Fast and cheap. Use it first for current facts, news, releases, prices, documentation, and anything that may have changed since training. Supports ranked snippets, domain include/exclude filters, and time ranges.
 - \`web_fetch\` — fetch one HTTP or HTTPS URL and return its text with status metadata. Use it when you already have the URL or the user gave you one. Local and private addresses are blocked, and content truncates at 100,000 characters.
 
 On demand, via \`search_tools\` (matches activate immediately, no load step):
 
-- \`web-search\` — web search. Fast and cheap. Use it first for current facts, news, releases, prices, documentation, and anything that may have changed since training. Supports ranked snippets, domain include/exclude filters, and time ranges.
 - \`web-extract\` — pull cleaned Markdown or text from one or more known URLs.
 - \`web-crawl\` — follow links from a starting URL for multi-page coverage.
 - \`web-map\` — list the URLs a site exposes without fetching every page.

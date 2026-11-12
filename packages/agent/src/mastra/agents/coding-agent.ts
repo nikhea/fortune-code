@@ -25,6 +25,7 @@ import {
 import { createDurableAgent } from "@mastra/core/agent/durable";
 import { codingWorkspace } from "../workspace/coding-workspace";
 import { toolSearchProcessor } from "../processors/tool-search";
+import { webSearchTool } from "../tools/web-tools";
 import {
   agentsMdInjector,
   batchPartsProcessor,
@@ -69,6 +70,7 @@ const codingAgent = createCodingAgent({
   tools: {
     ask_user: askUserTool,
     submit_plan: submitPlanTool,
+    "web-search": webSearchTool,
     web_fetch: webFetchTool,
   },
   signals: [new TaskSignalProvider()],

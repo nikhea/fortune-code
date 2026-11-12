@@ -13,12 +13,14 @@ function renameTool(tool: Tool<any, any>, id: string): Tool<any, any> {
   return Object.assign(tool, { id });
 }
 
+/** Attached directly to the agent, since search is needed on most tasks. */
+export const webSearchTool = renameTool(tavily.tavilySearch, "web-search");
+
 /**
- * Web access tools. Searched and activated through `ToolSearchProcessor`, so
- * they are absent from the prompt until the model calls `search_tools`.
+ * Web tools that stay out of the prompt and are activated on demand through
+ * `ToolSearchProcessor`.
  */
 export const webTools = {
-  "web-search": renameTool(tavily.tavilySearch, "web-search"),
   "web-extract": renameTool(tavily.tavilyExtract, "web-extract"),
   "web-crawl": renameTool(tavily.tavilyCrawl, "web-crawl"),
   "web-map": renameTool(tavily.tavilyMap, "web-map"),
