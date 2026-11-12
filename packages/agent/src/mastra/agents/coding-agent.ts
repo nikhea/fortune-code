@@ -2,6 +2,10 @@ import { createCodingAgent } from "@mastra/core/coding-agent";
 import { codingAgentBaseConfig } from "../lib/config";
 import { scheduleInstructions } from "../instructions/schedule.instruction";
 import {
+  projectMemoryTemplate,
+  workingMemoryInstructions,
+} from "../instructions/working-memory.instruction";
+import {
   CyberRefusalHandler,
   PrefillErrorHandler,
   ProviderHistoryCompat,
@@ -31,6 +35,7 @@ const codingAgent = createCodingAgent({
   instructions: [
     { role: "system", content: codingAgentBaseConfig.instructions },
     { role: "system", content: scheduleInstructions },
+    { role: "system", content: workingMemoryInstructions },
   ],
   basePath: codingAgentBaseConfig.projectPath,
   workspace: codingWorkspace,
@@ -59,6 +64,22 @@ const codingAgent = createCodingAgent({
   memory: new Memory({
     options: {
       lastMessages: 20,
+      // Project notes persist across every thread that shares this resourceId,
+      // which the controller sets to the project path. Delivered as a
+      // `working-memory` state signal instead of being folded into the system
+      // prompt; writes go through the `setWorkingMemory` tool.
+      workingMemory: {
+        enabled: true,
+        scope: "resource",
+        useStateSignals: true,
+        template: projectMemoryTemplate,
+      },
+      // Non-blocking thread titles for clients that list conversations.
+      generateTitle: {
+        model: process.env.JUDGE_MODEL ?? codingAgentBaseConfig.model,
+        instructions:
+          "Name the coding task in this thread in six words or fewer. Mention the feature or file, not the conversation.",
+      },
     },
   }),
   errorProcessors: [
