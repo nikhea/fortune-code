@@ -5,8 +5,11 @@ import { Memory } from "@mastra/memory";
 import { TaskSignalProvider } from "@mastra/core/signals";
 import { askUserTool, submitPlanTool } from "@mastra/core/tools";
 import { tavilyTools } from "../tools/tavily-tool";
+import { scheduleTools } from "../tools/schedule-tools";
+import { codingWorkspace } from "../workspace/coding-workspace";
+import { createDurableAgent } from "@mastra/core/agent/durable";
 
-export const codingAgent = createCodingAgent({
+const codingAgent = createCodingAgent({
   id: "coding-agent",
   name: "Coding Agent",
   model: codingAgentBaseConfig.model,
@@ -14,7 +17,8 @@ export const codingAgent = createCodingAgent({
     { role: "system", content: codingAgentBaseConfig.instructions },
   ],
   basePath: codingAgentBaseConfig.projectPath,
-  tools: { submitPlanTool, askUserTool, ...tavilyTools },
+  workspace: codingWorkspace,
+  tools: { submitPlanTool, askUserTool, ...tavilyTools, ...scheduleTools },
   signals: [new TaskSignalProvider()],
   memory: new Memory({
     options: {
@@ -36,3 +40,7 @@ export const codingAgent = createCodingAgent({
     maxSteps: parseInt(process.env.MAX_STEPS || "100"),
   },
 });
+
+const durableCodingAgent = createDurableAgent({ agent: codingAgent });
+
+export { codingAgent, durableCodingAgent };

@@ -16,18 +16,27 @@ import {
   completenessScorer,
   translationScorer,
 } from "./scorers/weather-scorer";
-import { codingAgent } from "./agents/coding-agent";
+import { codingAgent, durableCodingAgent } from "./agents/coding-agent";
 import { createCodingAgentSession } from "./controller/coding-agent-controller";
+import { scheduleTools } from "./tools/schedule-tools";
 
 const codingAgentController = await createCodingAgentSession();
 export const mastra = new Mastra({
   workflows: { weatherWorkflow },
-  agents: { weatherAgent, codingAgent },
+  agents: { weatherAgent, codingAgent, durableCodingAgent },
+  tools: { ...scheduleTools },
   agentControllers: { codingAgentController: codingAgentController.controller },
   scorers: {
     toolCallAppropriatenessScorer,
     completenessScorer,
     translationScorer,
+  },
+  backgroundTasks: {
+    enabled: true,
+    globalConcurrency: 10,
+    perAgentConcurrency: 5,
+    backpressure: "queue",
+    defaultTimeoutMs: 300_000,
   },
   storage: new MastraCompositeStore({
     id: "composite-storage",
