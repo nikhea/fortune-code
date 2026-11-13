@@ -9,7 +9,8 @@ const scheduleViewSchema = z.object({
   agentId: z.string().optional(),
   name: z.string().optional(),
   prompt: z.string().optional(),
-  cron: z.string(),
+  // A one-off schedule has no cron expression, it fires once at `runAt`.
+  cron: z.string().optional(),
   timezone: z.string().optional(),
   status: scheduleStatusSchema,
   threadId: z.string().optional(),
