@@ -5,6 +5,7 @@ import type { MastraDBMessage } from "@mastra/client-js";
 import { ChatMessage } from "@/components/ui/chat-message";
 import type { ChatRole } from "@/components/ui/chat-message";
 import { TextInput } from "@/components/ui/text-input";
+import { ModeSwitcher } from "@/components/mode-switcher";
 import { useMessages, useSessionStream } from "@/hooks/use-agent";
 import { useTheme } from "@/hooks/use-theme";
 import type { AgentConnection } from "@/lib/connection";
@@ -100,6 +101,7 @@ export const ChatView = ({ connection, tab }: ChatViewProps) => {
           );
         })}
       </box>
+      <ModeSwitcher connection={connection} tab={tab} />
       <TextInput
         value={draft}
         onChange={setDraft}

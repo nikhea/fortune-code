@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import type {
   AgentControllerEvent,
@@ -56,6 +56,28 @@ export const useSessionState = (
     queryKey: queryKeys.sessionState(sessionId),
     queryFn: () => connection.session(sessionId).state(),
   });
+
+/**
+ * Switches the mode of a session: build, plan, or explore.
+ *
+ * The mode belongs to the session, so every tab switches on its own.
+ */
+export const useSwitchMode = (
+  connection: AgentConnection,
+  sessionId: string,
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (modeId: string) =>
+      connection.session(sessionId).switchMode(modeId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.sessionState(sessionId),
+      });
+    },
+  });
+};
 
 /**
  * Appends a streamed text delta to a message.

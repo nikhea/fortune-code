@@ -48,7 +48,7 @@ export const TabBar = ({
       <TabbedContent
         tabs={tabs.map((tab) => ({
           id: tab.id,
-          label: tab.title,
+          label: tab.mode ? `${tab.title} · ${tab.mode}` : tab.title,
           content: renderContent(tab),
         }))}
         activeTab={activeTabId ?? undefined}
@@ -57,7 +57,7 @@ export const TabBar = ({
         keyboardNavigation={false}
       />
       <text fg={theme.colors.mutedForeground}>
-        {"Tab switches tabs · ctrl+c quits"}
+        {"Tab switches tabs · F1/F2/F3 switch the mode · ctrl+c quits"}
       </text>
     </box>
   );

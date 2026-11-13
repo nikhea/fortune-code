@@ -77,6 +77,10 @@ export const TextInput = ({
     ) {
       return;
     }
+    // A key with ctrl or meta held is a shortcut, not text.
+    if (key.ctrl || key.meta) {
+      return;
+    }
     if (key.name === "return") {
       const err = validate ? validate(value) : null;
       if (err) {

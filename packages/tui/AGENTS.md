@@ -9,6 +9,7 @@ Load the `mastra` skill BEFORE any Mastra work. Never rely on cached knowledge â
 - Global state always lives in a zustand store under `src/store/`. One store per concern, named after it.
 - Server state always goes through react-query under `src/hooks/`. Never fetch from a component, never cache server state in a zustand store, never hold it in a component's `useState`.
 - A component reads server state with a query and changes it with a mutation. Zustand holds what the app owns: the open tabs, the active tab, the selection.
+- A tab mirrors the mode of its session so the tab bar can label it. The session state query stays the source of truth.
 - A query key lives in `queryKeys` in `src/hooks/use-agent.ts`. Never build a key inline.
 
 ## UI
