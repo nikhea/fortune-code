@@ -46,6 +46,7 @@ The tool set follows the Mastra Code names:
 | ---------- | --------------------------------------------------------------------------------------- |
 | Files      | `view`, `write_file`, `string_replace_lsp`, `ast_smart_edit`, `apply_patch`, `find_files`, `file_stat` |
 | Search     | `search_content`, `search`, `index`                                                     |
+| Changes    | `diff`                                                                                   |
 | Shell      | `execute_command`, `get_process_output`, `kill_process`                                 |
 | Web        | `web_search`, `web_fetch`, `web_extract`, `web_crawl`, `web_map`                        |
 | Tasks      | `task_write`, `task_update`, `task_complete`, `task_check`                             |
@@ -53,6 +54,8 @@ The tool set follows the Mastra Code names:
 | Workflows  | `list-workflows`, `get-workflow`, `create-workflow`, `run-workflow`, `delete-workflow`  |
 
 `ast_smart_edit` needs the optional `@ast-grep/napi` dependency, which is installed.
+
+`diff` reports the working tree against HEAD: the files that changed, their line counts, and the patch. It only reads, so it is available in every mode. Untracked files are diffed against the empty file, so new files show up in the patch too.
 
 ## Permissions
 

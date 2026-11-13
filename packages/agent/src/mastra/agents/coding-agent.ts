@@ -25,6 +25,7 @@ import { toolSearchProcessor } from "../processors/tool-search";
 import { webSearchTool } from "../tools/web-tools";
 import { requestAccessTool } from "../tools/access-tools";
 import { notificationInboxTool } from "../tools/notification-tools";
+import { diffTool } from "../tools/diff-tools";
 import {
   listWorkflowsTool,
   getWorkflowTool,
@@ -84,6 +85,7 @@ const codingAgent = createCodingAgent({
     web_fetch: webFetchTool,
     request_access: requestAccessTool,
     notification_inbox: notificationInboxTool,
+    diff: diffTool,
     "list-workflows": listWorkflowsTool,
     "get-workflow": getWorkflowTool,
     "create-workflow": createWorkflowTool,

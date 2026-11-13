@@ -98,6 +98,12 @@ const WORKFLOW_WRITE_TOOLS = [
 ];
 
 /**
+ * The diff of the working tree. It only reads, so every mode can use it:
+ * the agent reviews its own changes, and it answers what changed.
+ */
+const DIFF_TOOLS = ["diff"];
+
+/**
  * Build changes the project. It is the only mode that writes files, runs
  * commands, or reaches the web, and it is the only mode that can spawn a
  * subagent. `submit_plan` is Plan mode's tool, so it is not here.
@@ -112,6 +118,7 @@ const BUILD_TOOLS = [
   ...CONTEXT_TOOLS,
   ...WORKFLOW_READ_TOOLS,
   ...WORKFLOW_WRITE_TOOLS,
+  ...DIFF_TOOLS,
   "index",
   "update-working-memory",
   "ask_user",
@@ -130,6 +137,7 @@ const PLAN_TOOLS = [
   ...TASK_TOOLS,
   ...CONTEXT_TOOLS,
   ...WORKFLOW_READ_TOOLS,
+  ...DIFF_TOOLS,
   "write_plan_file",
   "ask_user",
   "submit_plan",
@@ -144,6 +152,7 @@ const EXPLORE_TOOLS = [
   ...READ_TOOLS,
   ...CONTEXT_TOOLS,
   ...WORKFLOW_READ_TOOLS,
+  ...DIFF_TOOLS,
   "ask_user",
 ];
 

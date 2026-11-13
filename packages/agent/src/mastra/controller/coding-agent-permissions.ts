@@ -29,6 +29,7 @@ const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   load_skill: "read",
   recall: "read",
   notification_inbox: "read",
+  diff: "read",
   task_write: "read",
   task_update: "read",
   task_complete: "read",
