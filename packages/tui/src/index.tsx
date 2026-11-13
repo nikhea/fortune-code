@@ -28,7 +28,6 @@ function App() {
   const activeTabId = useTabsStore((state) => state.activeTabId);
   const openTab = useTabsStore((state) => state.openTab);
   const setActiveTab = useTabsStore((state) => state.setActiveTab);
-  const updateTab = useTabsStore((state) => state.updateTab);
 
   const createTab = useCallback(
     async (title?: string) => {
@@ -57,11 +56,17 @@ function App() {
   );
 
   useEffect(() => {
+    // The renderer mounts the tree again once it settles, so the first tab is
+    // only opened when there is none yet.
+    if (useTabsStore.getState().tabs.length > 0) {
+      return;
+    }
+
     void createTab();
   }, [createTab]);
 
   return (
-    <box flexDirection="column">
+    <box flexDirection="column" flexGrow={1}>
       {tabs.length === 0 ? (
         <text>{"Connecting to the agent…"}</text>
       ) : (
@@ -69,6 +74,7 @@ function App() {
           tabs={tabs}
           activeTabId={activeTabId}
           onTabChange={setActiveTab}
+          onNewTab={() => void createTab()}
           renderContent={(tab) =>
             tab.status === "error" ? (
               <text fg="#f00">{tab.error ?? "The tab could not be opened."}</text>

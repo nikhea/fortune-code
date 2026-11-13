@@ -56,6 +56,17 @@ export const ModeSwitcher = ({ connection, tab }: ModeSwitcherProps) => {
   }, [modeId, updateTab, tab.id]);
 
   useKeyboard((key) => {
+    // Shift+Tab walks through the modes.
+    if (key.name === "tab" && key.shift) {
+      const index = modes.findIndex((mode) => mode.id === modeId);
+      const next = modes[(index + 1) % modes.length];
+
+      if (next && next.id !== modeId) {
+        void switchMode.mutateAsync(next.id);
+      }
+      return;
+    }
+
     const index = modeIndexOf(key);
 
     if (index === undefined) {

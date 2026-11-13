@@ -96,7 +96,7 @@ export const ChatMessage = ({
 
   return (
     <box flexDirection="column" marginBottom={1}>
-      <box gap={1}>
+      <box gap={1} flexDirection="row">
         <text fg={color}>
           <b>{name ?? roleLabel[sender]}</b>
         </text>

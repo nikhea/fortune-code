@@ -9,6 +9,8 @@ export interface TabBarProps {
   tabs: Tab[];
   activeTabId: string | null;
   onTabChange: (id: string) => void;
+  /** Opens another tab. */
+  onNewTab: () => void;
   /** The content of a tab. Only the active tab is mounted. */
   renderContent: (tab: Tab) => ReactNode;
 }
@@ -18,25 +20,32 @@ export interface TabBarProps {
  *
  * Every tab is a session of its own, so the bar is also the session switcher.
  * The arrow keys are left to the composer, which moves the cursor with them,
- * so the tabs switch on Tab and Shift+Tab instead.
+ * so the tabs switch on Tab and Ctrl+Tab, and Ctrl+T opens another one.
+ * Shift+Tab belongs to the mode, which walks through the modes.
  */
 export const TabBar = ({
   tabs,
   activeTabId,
   onTabChange,
+  onNewTab,
   renderContent,
 }: TabBarProps) => {
   const theme = useTheme();
 
   useKeyboard((key) => {
-    if (key.name !== "tab") {
+    if (key.ctrl && key.name === "t") {
+      onNewTab();
+      return;
+    }
+
+    if (key.name !== "tab" || key.shift) {
       return;
     }
 
     const index = tabs.findIndex((tab) => tab.id === activeTabId);
-    const next = key.shift
-      ? tabs[Math.max(0, index - 1)]
-      : tabs[Math.min(tabs.length - 1, index + 1)];
+    const next = key.ctrl
+      ? tabs[(index - 1 + tabs.length) % tabs.length]
+      : tabs[(index + 1) % tabs.length];
 
     if (next && next.id !== activeTabId) {
       onTabChange(next.id);
@@ -44,7 +53,7 @@ export const TabBar = ({
   });
 
   return (
-    <box flexDirection="column">
+    <box flexDirection="column" flexGrow={1}>
       <TabbedContent
         tabs={tabs.map((tab) => ({
           id: tab.id,
@@ -55,9 +64,10 @@ export const TabBar = ({
         onChange={onTabChange}
         tabBarStyle="underline"
         keyboardNavigation={false}
+        fill
       />
       <text fg={theme.colors.mutedForeground}>
-        {"Tab switches tabs · F1/F2/F3 switch the mode · ctrl+c quits"}
+        {"Tab: next tab · ctrl+t: new tab · shift+tab: mode · F1/F2/F3: mode · ctrl+c: quit"}
       </text>
     </box>
   );

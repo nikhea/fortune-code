@@ -1,4 +1,5 @@
 import { agentControllerMessageText } from "@mastra/client-js";
+import { useTerminalDimensions } from "@opentui/react";
 import { useCallback, useState } from "react";
 import type { MastraDBMessage } from "@mastra/client-js";
 
@@ -46,6 +47,7 @@ const errorOf = (message: MastraDBMessage): string | undefined => {
  */
 export const ChatView = ({ connection, tab }: ChatViewProps) => {
   const theme = useTheme();
+  const { width } = useTerminalDimensions();
   const updateTab = useTabsStore((state) => state.updateTab);
   const { data: messages = [] } = useMessages(
     connection,
@@ -107,7 +109,7 @@ export const ChatView = ({ connection, tab }: ChatViewProps) => {
         onChange={setDraft}
         onSubmit={(text) => void send(text)}
         placeholder="Ask the agent…"
-        width={100}
+        width={Math.max(20, width - 6)}
       />
     </box>
   );
