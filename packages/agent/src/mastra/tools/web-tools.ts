@@ -14,14 +14,14 @@ function renameTool(tool: Tool<any, any>, id: string): Tool<any, any> {
 }
 
 /** Attached directly to the agent, since search is needed on most tasks. */
-export const webSearchTool = renameTool(tavily.tavilySearch, "web-search");
+export const webSearchTool = renameTool(tavily.tavilySearch, "web_search");
 
 /**
  * Web tools that stay out of the prompt and are activated on demand through
  * `ToolSearchProcessor`.
  */
 export const webTools = {
-  "web-extract": renameTool(tavily.tavilyExtract, "web-extract"),
-  "web-crawl": renameTool(tavily.tavilyCrawl, "web-crawl"),
-  "web-map": renameTool(tavily.tavilyMap, "web-map"),
+  web_extract: renameTool(tavily.tavilyExtract, "web_extract"),
+  web_crawl: renameTool(tavily.tavilyCrawl, "web_crawl"),
+  web_map: renameTool(tavily.tavilyMap, "web_map"),
 };

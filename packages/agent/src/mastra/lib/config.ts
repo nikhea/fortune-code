@@ -16,14 +16,12 @@ const codingAgentInstructions = buildBasePrompt({
   coAuthorName: process.env.CO_AUTHOR_NAME,
   coAuthorEmail: process.env.CO_AUTHOR_EMAIL,
   toolGuidance: `# Workspace tools
-- Use read_file for view.
-- Use list_files for find_files.
-- Use grep for search_content.
-- Use execute_command for execute_command.
-- Use write_file, edit_file, and file_stat for writing, editing, and inspecting file metadata.
-- Use search for indexed search and lsp_inspect for language-server diagnostics.
+- Use view to read a file, find_files to list files, search_content to grep, and file_stat to inspect file metadata.
+- Use write_file to create a file, string_replace_lsp to edit one, ast_smart_edit for structure-aware edits, and apply_patch for multi-file patches.
+- Use execute_command for shell commands, and search for indexed search and lsp_inspect for language-server diagnostics.
+- Use diff to see what changed in the working tree, with the patch and the changed files.
 - Use search_skills and load_skill to find and load workspace skills on demand.
-- Use \`web-search\` and \`web_fetch\` directly. Use search_tools only to activate \`web-extract\`, \`web-crawl\`, and \`web-map\` when you need them.
+- Use \`web_search\` and \`web_fetch\` directly. Use search_tools only to activate \`web_extract\`, \`web_crawl\`, and \`web_map\` when you need them.
 - Use only the workspace tools provided to you. Do not attempt unavailable capabilities.`,
 });
 

@@ -7,6 +7,9 @@ dist
 *.tgz
 .mastra
 
+# agent plans
+.mastracode/plans
+
 # coverage
 coverage
 *.lcov

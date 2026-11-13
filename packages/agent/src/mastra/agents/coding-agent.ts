@@ -3,10 +3,7 @@ import { codingAgentBaseConfig } from "../lib/config";
 import { scheduleInstructions } from "../instructions/schedule.instruction";
 import { webInstructions } from "../instructions/web.instruction";
 import { askAndPlanInstructions } from "../instructions/ask-and-plan.instruction";
-import {
-  projectMemoryTemplate,
-  workingMemoryInstructions,
-} from "../instructions/working-memory.instruction";
+import { workingMemoryInstructions } from "../instructions/working-memory.instruction";
 import {
   CyberRefusalHandler,
   PrefillErrorHandler,
@@ -15,17 +12,27 @@ import {
   StreamErrorRetryProcessor,
   UnsupportedFileHandler,
 } from "@mastra/core/processors";
-import { Memory } from "@mastra/memory";
+import { AgentBrowser } from "@mastra/agent-browser";
+
 import { TaskSignalProvider } from "@mastra/core/signals";
-import {
-  askUserTool,
-  submitPlanTool,
-  webFetchTool,
-} from "@mastra/core/tools";
+import { askUserTool, submitPlanTool, webFetchTool } from "@mastra/core/tools";
 import { createDurableAgent } from "@mastra/core/agent/durable";
+import { GithubSignals } from "@mastra/github-signals";
+
 import { codingWorkspace } from "../workspace/coding-workspace";
+import { codingAgentMemory } from "../memory/coding-agent-memory";
 import { toolSearchProcessor } from "../processors/tool-search";
 import { webSearchTool } from "../tools/web-tools";
+import { requestAccessTool } from "../tools/access-tools";
+import { notificationInboxTool } from "../tools/notification-tools";
+import { diffTool } from "../tools/diff-tools";
+import {
+  listWorkflowsTool,
+  getWorkflowTool,
+  createWorkflowTool,
+  runWorkflowTool,
+  deleteWorkflowTool,
+} from "../tools/workflow-tools";
 import {
   agentsMdInjector,
   batchPartsProcessor,
@@ -33,6 +40,10 @@ import {
   responseCacheProcessor,
   unicodeNormalizer,
 } from "../processors/coding-agent-processors";
+
+export const browser = new AgentBrowser({
+  headless: false,
+});
 
 const codingAgent = createCodingAgent({
   id: "coding-agent",
@@ -70,31 +81,23 @@ const codingAgent = createCodingAgent({
   tools: {
     ask_user: askUserTool,
     submit_plan: submitPlanTool,
-    "web-search": webSearchTool,
+    web_search: webSearchTool,
     web_fetch: webFetchTool,
+    request_access: requestAccessTool,
+    notification_inbox: notificationInboxTool,
+    diff: diffTool,
+    "list-workflows": listWorkflowsTool,
+    "get-workflow": getWorkflowTool,
+    "create-workflow": createWorkflowTool,
+    "run-workflow": runWorkflowTool,
+    "delete-workflow": deleteWorkflowTool,
   },
-  signals: [new TaskSignalProvider()],
-  memory: new Memory({
-    options: {
-      lastMessages: 20,
-      // Project notes persist across every thread that shares this resourceId,
-      // which the controller sets to the project path. Delivered as a
-      // `working-memory` state signal instead of being folded into the system
-      // prompt; writes go through the `setWorkingMemory` tool.
-      workingMemory: {
-        enabled: true,
-        scope: "resource",
-        useStateSignals: true,
-        template: projectMemoryTemplate,
-      },
-      // Non-blocking thread titles for clients that list conversations.
-      generateTitle: {
-        model: process.env.JUDGE_MODEL ?? codingAgentBaseConfig.model,
-        instructions:
-          "Name the coding task in this thread in six words or fewer. Mention the feature or file, not the conversation.",
-      },
-    },
-  }),
+  signals: [
+    new TaskSignalProvider(),
+    new GithubSignals({ pollIntervalMs: 5 * 60 * 1000 }),
+  ],
+  memory: codingAgentMemory,
+  browser,
   errorProcessors: [
     // Repair processors run first; each can short-circuit with a retry.
     new ProviderHistoryCompat(),
@@ -110,7 +113,7 @@ const codingAgent = createCodingAgent({
     }),
   ],
   goal: {
-    judge: process.env.JUDGE_MODEL,
+    judge: process.env.JUDGE_MODEL ?? codingAgentBaseConfig.model,
     maxRuns: parseInt(process.env.MAX_RUNS || "50"),
   },
   defaultOptions: {
