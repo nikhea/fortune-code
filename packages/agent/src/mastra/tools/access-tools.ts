@@ -50,15 +50,21 @@ export const requestAccessTool = createTool({
     path: z.string(),
     reason: z.string(),
   }),
-  resumeSchema: z.object({
-    approved: z.boolean(),
-    note: z.string().optional(),
-  }),
+  // The host answers with "Yes" or "No". An explicit `{ approved }` is
+  // accepted too, so a host that prefers a structured answer can use it.
+  resumeSchema: z.union([
+    z.string(),
+    z.object({ approved: z.boolean(), note: z.string().optional() }),
+  ]),
   execute: async ({ path, reason }, context) => {
     const resumeData = context?.agent?.resumeData;
+    const approved =
+      typeof resumeData === "string"
+        ? /^(yes|y|approve|approved|allow|allowed)$/i.test(resumeData.trim())
+        : Boolean(resumeData?.approved);
 
-    if (resumeData) {
-      if (!resumeData.approved) {
+    if (resumeData !== undefined) {
+      if (!approved) {
         return {
           path,
           granted: false,

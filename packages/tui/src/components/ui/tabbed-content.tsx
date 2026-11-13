@@ -17,6 +17,11 @@ export interface TabbedContentProps {
   activeTab?: string;
   onChange?: (id: string) => void;
   tabBarStyle?: "underline" | "box" | "minimal";
+  /**
+   * Whether the arrow keys switch tabs. Turn it off when a focusable widget
+   * inside the content uses the arrow keys for something else.
+   */
+  keyboardNavigation?: boolean;
 }
 
 export const TabbedContent = ({
@@ -25,6 +30,7 @@ export const TabbedContent = ({
   activeTab: controlledTab,
   onChange,
   tabBarStyle = "underline",
+  keyboardNavigation = true,
 }: TabbedContentProps) => {
   const theme = useTheme();
   const [internalTab, setInternalTab] = useState(
@@ -42,6 +48,9 @@ export const TabbedContent = ({
   };
 
   useKeyboard((key) => {
+    if (!keyboardNavigation) {
+      return;
+    }
     if (key.name === "left" || (key.shift && key.name === "tab")) {
       let prev = activeIndex - 1;
       while (prev >= 0 && tabs[prev]?.disabled) {
@@ -160,7 +169,9 @@ export const TabbedContent = ({
       >
         {activeTab?.content}
       </box>
-      <text fg="#666">←→ or Tab to switch tabs</text>
+      <text fg="#666">
+        {keyboardNavigation ? "←→ or Tab to switch tabs" : "Tab to switch tabs"}
+      </text>
     </box>
   );
 };
