@@ -6,7 +6,8 @@ import { useTheme } from "@/hooks/use-theme";
 
 export interface TabbedContentTab {
   id: string;
-  label: string;
+  /** The label of the tab. It may hold styled parts, such as a mode. */
+  label: ReactNode;
   content: ReactNode;
   disabled?: boolean;
 }
@@ -17,6 +18,16 @@ export interface TabbedContentProps {
   activeTab?: string;
   onChange?: (id: string) => void;
   tabBarStyle?: "underline" | "box" | "minimal";
+  /**
+   * Whether the arrow keys switch tabs. Turn it off when a focusable widget
+   * inside the content uses the arrow keys for something else.
+   */
+  keyboardNavigation?: boolean;
+  /**
+   * Grow the content to fill the height the component is given, so a widget
+   * inside it can sit at the bottom of the screen.
+   */
+  fill?: boolean;
 }
 
 export const TabbedContent = ({
@@ -25,6 +36,8 @@ export const TabbedContent = ({
   activeTab: controlledTab,
   onChange,
   tabBarStyle = "underline",
+  keyboardNavigation = true,
+  fill = false,
 }: TabbedContentProps) => {
   const theme = useTheme();
   const [internalTab, setInternalTab] = useState(
@@ -42,6 +55,9 @@ export const TabbedContent = ({
   };
 
   useKeyboard((key) => {
+    if (!keyboardNavigation) {
+      return;
+    }
     if (key.name === "left" || (key.shift && key.name === "tab")) {
       let prev = activeIndex - 1;
       while (prev >= 0 && tabs[prev]?.disabled) {
@@ -66,7 +82,7 @@ export const TabbedContent = ({
   const renderTabBar = () => {
     if (tabBarStyle === "box") {
       return (
-        <box borderStyle="single" borderColor={theme.colors.border}>
+        <box borderStyle="single" borderColor={theme.colors.border} flexDirection="row">
           {tabs.map((tab, idx) => {
             const isActive = tab.id === activeId;
             let textColor: string;
@@ -78,9 +94,9 @@ export const TabbedContent = ({
               textColor = theme.colors.foreground;
             }
             return (
-              <box key={tab.id} paddingLeft={1} paddingRight={1}>
+              <box key={tab.id} paddingLeft={1} paddingRight={1} flexDirection="row">
                 <text fg={textColor}>
-                  {isActive ? <b>{`[${tab.label}]`}</b> : ` ${tab.label} `}
+                  {isActive ? <b>[{tab.label}]</b> : tab.label}
                 </text>
                 {idx < tabs.length - 1 && (
                   <text fg={theme.colors.border}>{" │ "}</text>
@@ -94,7 +110,7 @@ export const TabbedContent = ({
 
     if (tabBarStyle === "minimal") {
       return (
-        <box gap={2}>
+        <box gap={2} flexDirection="row">
           {tabs.map((tab) => {
             const isActive = tab.id === activeId;
             let textColor: string;
@@ -116,7 +132,7 @@ export const TabbedContent = ({
     }
 
     return (
-      <box>
+      <box flexDirection="row">
         {tabs.map((tab, idx) => {
           const isActive = tab.id === activeId;
           let textColor: string;
@@ -128,7 +144,7 @@ export const TabbedContent = ({
             textColor = theme.colors.foreground;
           }
           return (
-            <box key={tab.id}>
+            <box key={tab.id} flexDirection="row">
               <text fg={textColor}>
                 {isActive ? (
                   <b>
@@ -149,7 +165,7 @@ export const TabbedContent = ({
   };
 
   return (
-    <box flexDirection="column">
+    <box flexDirection="column" flexGrow={fill ? 1 : undefined}>
       {renderTabBar()}
       <box
         borderStyle="single"
@@ -157,10 +173,13 @@ export const TabbedContent = ({
         paddingLeft={1}
         paddingRight={1}
         marginTop={0}
+        flexGrow={fill ? 1 : undefined}
       >
         {activeTab?.content}
       </box>
-      <text fg="#666">←→ or Tab to switch tabs</text>
+      <text fg="#666">
+        {keyboardNavigation ? "←→ or Tab to switch tabs" : "Tab to switch tabs"}
+      </text>
     </box>
   );
 };

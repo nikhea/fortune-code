@@ -69,11 +69,11 @@ export const Tabs = ({
 
   return (
     <box flexDirection="column">
-      <box paddingLeft={tabBarPaddingX} paddingRight={tabBarPaddingX} gap={0}>
+      <box paddingLeft={tabBarPaddingX} paddingRight={tabBarPaddingX} gap={0} flexDirection="row">
         {tabs.map((tab, idx) => {
           const isActive = tab.key === activeKey;
           return (
-            <box key={tab.key}>
+            <box key={tab.key} flexDirection="row">
               <text
                 fg={
                   isActive ? theme.colors.primary : theme.colors.mutedForeground
