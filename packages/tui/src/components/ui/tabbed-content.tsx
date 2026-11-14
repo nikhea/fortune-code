@@ -6,7 +6,8 @@ import { useTheme } from "@/hooks/use-theme";
 
 export interface TabbedContentTab {
   id: string;
-  label: string;
+  /** The label of the tab. It may hold styled parts, such as a mode. */
+  label: ReactNode;
   content: ReactNode;
   disabled?: boolean;
 }
@@ -95,7 +96,7 @@ export const TabbedContent = ({
             return (
               <box key={tab.id} paddingLeft={1} paddingRight={1} flexDirection="row">
                 <text fg={textColor}>
-                  {isActive ? <b>{`[${tab.label}]`}</b> : ` ${tab.label} `}
+                  {isActive ? <b>[{tab.label}]</b> : tab.label}
                 </text>
                 {idx < tabs.length - 1 && (
                   <text fg={theme.colors.border}>{" │ "}</text>

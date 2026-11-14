@@ -5,6 +5,7 @@ import type { KeyEvent } from "@opentui/core";
 import { useTheme } from "@/hooks/use-theme";
 import { useModes, useSessionState, useSwitchMode } from "@/hooks/use-agent";
 import type { AgentConnection } from "@/lib/connection";
+import { modeColor } from "@/lib/modes";
 import { useTabsStore } from "@/store/tabs";
 import type { Tab } from "@/store/tabs";
 
@@ -87,12 +88,10 @@ export const ModeSwitcher = ({ connection, tab }: ModeSwitcherProps) => {
       <text fg={theme.colors.mutedForeground}>mode</text>
       {modes.map((mode, index) => {
         const isActive = mode.id === modeId;
+        const color = modeColor(theme, mode.id, index);
 
         return (
-          <text
-            key={mode.id}
-            fg={isActive ? theme.colors.primary : theme.colors.mutedForeground}
-          >
+          <text key={mode.id} fg={color}>
             {isActive ? <b>{mode.name}</b> : mode.name}
             {index < modes.length - 1 ? " │ " : ""}
           </text>

@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo } from "react";
 import { ChatView } from "@/components/chat-view";
 import { TabBar } from "@/components/tab-bar";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { useModes } from "@/hooks/use-agent";
 import { createConnection } from "@/lib/connection";
 import { useTabsStore } from "@/store/tabs";
 import type { Tab } from "@/store/tabs";
@@ -28,6 +29,9 @@ function App() {
   const activeTabId = useTabsStore((state) => state.activeTabId);
   const openTab = useTabsStore((state) => state.openTab);
   const setActiveTab = useTabsStore((state) => state.setActiveTab);
+
+  // The modes of the controller, so every tab can name and color its mode.
+  const { data: modes = [] } = useModes(connection);
 
   const createTab = useCallback(
     async (title?: string) => {
@@ -73,6 +77,7 @@ function App() {
         <TabBar
           tabs={tabs}
           activeTabId={activeTabId}
+          modes={modes}
           onTabChange={setActiveTab}
           onNewTab={() => void createTab()}
           renderContent={(tab) =>

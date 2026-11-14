@@ -3,11 +3,14 @@ import type { ReactNode } from "react";
 
 import { TabbedContent } from "@/components/ui/tabbed-content";
 import { useTheme } from "@/hooks/use-theme";
+import { modeColor } from "@/lib/modes";
 import type { Tab } from "@/store/tabs";
 
 export interface TabBarProps {
   tabs: Tab[];
   activeTabId: string | null;
+  /** The modes of the controller, so a tab can name and color its mode. */
+  modes: { id: string; name?: string }[];
   onTabChange: (id: string) => void;
   /** Opens another tab. */
   onNewTab: () => void;
@@ -26,6 +29,7 @@ export interface TabBarProps {
 export const TabBar = ({
   tabs,
   activeTabId,
+  modes,
   onTabChange,
   onNewTab,
   renderContent,
@@ -55,11 +59,25 @@ export const TabBar = ({
   return (
     <box flexDirection="column" flexGrow={1}>
       <TabbedContent
-        tabs={tabs.map((tab) => ({
-          id: tab.id,
-          label: tab.mode ? `${tab.title} · ${tab.mode}` : tab.title,
-          content: renderContent(tab),
-        }))}
+        tabs={tabs.map((tab) => {
+          const index = modes.findIndex((mode) => mode.id === tab.mode);
+          const mode = modes[index];
+
+          return {
+            id: tab.id,
+            label: mode ? (
+              <>
+                {tab.title}{" "}
+                <span fg={modeColor(theme, mode.id, index)}>
+                  {`· ${mode.name ?? mode.id}`}
+                </span>
+              </>
+            ) : (
+              tab.title
+            ),
+            content: renderContent(tab),
+          };
+        })}
         activeTab={activeTabId ?? undefined}
         onChange={onTabChange}
         tabBarStyle="underline"
