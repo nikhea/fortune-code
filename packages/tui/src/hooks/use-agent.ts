@@ -30,10 +30,11 @@ export const useModes = (connection: AgentConnection) =>
 export const useThreads = (connection: AgentConnection, sessionId: string) =>
   useQuery({
     queryKey: queryKeys.threads(sessionId),
-    queryFn: () =>
-      connection
-        .session(sessionId)
-        .listThreads({ tags: { projectPath: connection.resourceId } }),
+    queryFn: async () => {
+      const session = await connection.liveSession(sessionId);
+
+      return session.listThreads({ tags: { projectPath: connection.resourceId } });
+    },
   });
 
 /** The messages of one thread. */
@@ -44,7 +45,11 @@ export const useMessages = (
 ) =>
   useQuery({
     queryKey: queryKeys.messages(sessionId, threadId),
-    queryFn: () => connection.session(sessionId).listMessages(threadId, 200),
+    queryFn: async () => {
+      const session = await connection.liveSession(sessionId, threadId);
+
+      return session.listMessages(threadId, 200);
+    },
   });
 
 /** The mode, the model, and the thread of one session. */
@@ -54,7 +59,11 @@ export const useSessionState = (
 ) =>
   useQuery({
     queryKey: queryKeys.sessionState(sessionId),
-    queryFn: () => connection.session(sessionId).state(),
+    queryFn: async () => {
+      const session = await connection.liveSession(sessionId);
+
+      return session.state();
+    },
   });
 
 /**
@@ -69,8 +78,11 @@ export const useSwitchMode = (
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (modeId: string) =>
-      connection.session(sessionId).switchMode(modeId),
+    mutationFn: async (modeId: string) => {
+      const session = await connection.liveSession(sessionId);
+
+      return session.switchMode(modeId);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.sessionState(sessionId),

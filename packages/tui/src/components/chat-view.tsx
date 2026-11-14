@@ -76,7 +76,12 @@ export const ChatView = ({ connection, tab }: ChatViewProps) => {
 
     setDraft("");
     updateTab(tab.id, { status: "streaming" });
-    await connection.session(tab.sessionId).sendMessage(content);
+
+    // The session may be gone after a server restart, so it is brought back
+    // before the message goes out.
+    const session = await connection.liveSession(tab.sessionId, tab.threadId);
+
+    await session.sendMessage(content);
   };
 
   return (

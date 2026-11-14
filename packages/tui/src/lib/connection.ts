@@ -74,6 +74,26 @@ export class AgentConnection {
   }
 
   /**
+   * The session of a tab, brought back if the server forgot it.
+   *
+   * A live session lives in the memory of the server, and a server that
+   * restarts forgets it. Every call to a forgotten session fails, so the
+   * session is created again before it is used. The thread is stored, so the
+   * conversation comes back with it.
+   */
+  async liveSession(sessionId: string, threadId?: string) {
+    const session = this.session(sessionId);
+
+    await session.create({
+      resourceId: this.resourceId,
+      threadId,
+      tags: { projectPath: this.resourceId },
+    });
+
+    return session;
+  }
+
+  /**
    * Opens a tab: its own session on the resource, with its own thread.
    *
    * The session id is generated, so two tabs never share a run loop, a mode,
