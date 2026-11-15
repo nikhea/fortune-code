@@ -1,11 +1,13 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createCliRenderer } from "@opentui/core";
 import { createRoot } from "@opentui/react";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { ChatView } from "@/components/chat-view";
 import { TabBar } from "@/components/tab-bar";
+import { StatusMessage } from "@/components/ui/status-message";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { useAutoCopySelection } from "@/hooks/use-auto-copy";
 import { useModes } from "@/hooks/use-agent";
 import { createConnection } from "@/lib/connection";
 import { useTabsStore } from "@/store/tabs";
@@ -32,6 +34,15 @@ function App() {
 
   // The modes of the controller, so every tab can name and color its mode.
   const { data: modes = [] } = useModes(connection);
+
+  // Highlighting text copies it, and the app says so.
+  const [copied, setCopied] = useState<string | null>(null);
+
+  useAutoCopySelection((text) => {
+    setCopied(`${text.length} characters copied`);
+
+    setTimeout(() => setCopied(null), 2000);
+  });
 
   const createTab = useCallback(
     async (title?: string) => {
@@ -88,6 +99,11 @@ function App() {
             )
           }
         />
+      )}
+      {copied && (
+        <box flexDirection="row" gap={1}>
+          <StatusMessage variant="success">{copied}</StatusMessage>
+        </box>
       )}
     </box>
   );

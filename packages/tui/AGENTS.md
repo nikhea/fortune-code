@@ -18,6 +18,7 @@ Load the `mastra` skill BEFORE any Mastra work. Never rely on cached knowledge â
 - When the library lacks something, add it to the library instead of working around it in feature code. Change the library component's props rather than forking it.
 - Colors, spacing, and typography come from `useTheme()`. No hardcoded colors.
 - Feature components live in `src/components/` and compose the library. They hold layout, not widget behavior.
+- Highlighting text copies it. The renderer does the selection, so the app copies what was selected and says so.
 
 ## The agent connection
 
