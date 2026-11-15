@@ -9,6 +9,7 @@ import type { AgentConnection } from "@/lib/connection";
 
 export const queryKeys = {
   modes: ["agent-controller", "modes"] as const,
+  models: ["agent-controller", "models"] as const,
   threads: (sessionId: string) => ["agent-controller", "threads", sessionId] as const,
   messages: (sessionId: string, threadId: string) =>
     ["agent-controller", "messages", sessionId, threadId] as const,
@@ -24,18 +25,34 @@ export const useModes = (connection: AgentConnection) =>
   });
 
 /**
+ * The models the controller can run.
+ *
+ * The catalog is fetched on demand rather than with every render, so the
+ * query lives here on its own and the callers decide when to ask for it.
+ */
+export const modelsQuery = (connection: AgentConnection) => ({
+  queryKey: queryKeys.models,
+  queryFn: () => connection.controller.listModels(),
+});
+
+/**
  * The threads of the project. The threads are scoped by the project tag, so
  * another worktree of the same repository does not show up here.
  */
-export const useThreads = (connection: AgentConnection, sessionId: string) =>
-  useQuery({
-    queryKey: queryKeys.threads(sessionId),
-    queryFn: async () => {
-      const session = await connection.liveSession(sessionId);
+export const threadsQuery = (
+  connection: AgentConnection,
+  sessionId: string,
+) => ({
+  queryKey: queryKeys.threads(sessionId),
+  queryFn: async () => {
+    const session = await connection.liveSession(sessionId);
 
-      return session.listThreads({ tags: { projectPath: connection.resourceId } });
-    },
-  });
+    return session.listThreads({ tags: { projectPath: connection.resourceId } });
+  },
+});
+
+export const useThreads = (connection: AgentConnection, sessionId: string) =>
+  useQuery(threadsQuery(connection, sessionId));
 
 /** The messages of one thread. */
 export const useMessages = (
@@ -86,6 +103,54 @@ export const useSwitchMode = (
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.sessionState(sessionId),
+      });
+    },
+  });
+};
+
+/**
+ * Switches the model of a session.
+ *
+ * The model belongs to the session, so every tab switches on its own.
+ */
+export const useSwitchModel = (
+  connection: AgentConnection,
+  sessionId: string,
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (modelId: string) => {
+      const session = await connection.liveSession(sessionId);
+
+      return session.switchModel(modelId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.sessionState(sessionId),
+      });
+    },
+  });
+};
+
+/**
+ * Creates a thread in a session and switches the session to it.
+ */
+export const useCreateThread = (
+  connection: AgentConnection,
+  sessionId: string,
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (title?: string) => {
+      const session = await connection.liveSession(sessionId);
+
+      return session.createThread(title);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.threads(sessionId),
       });
     },
   });

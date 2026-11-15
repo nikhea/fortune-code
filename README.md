@@ -38,6 +38,20 @@ Build is the default. Plan is read-only for project files: the only file it may 
 
 Each mode starts a session with its own model when the session has no selection yet; switching modes keeps the model the session already uses. Plans are written to `.mastracode/plans` unless `MASTRA_PLANS_DIR` says otherwise. See `packages/agent/.env.example` for every knob.
 
+## Slash commands
+
+A message that starts with a slash is a command, not a prompt. The composer lists the commands that match what was typed, the arrow keys move the selection, and Enter runs the highlighted one.
+
+| Command        | Does                                              |
+| -------------- | ------------------------------------------------- |
+| `/help`        | Lists the commands                                |
+| `/mode`        | Lists the modes, or switches to the one named     |
+| `/model`       | Lists the models, or switches to the one named    |
+| `/threads`     | Lists the threads of the project                  |
+| `/clear`       | Starts a new thread in the tab                    |
+
+Commands run in the client, so they answer at once and cost no model turn. The ones that change the session call the same API the TUI already uses, so the tab and the session stay in step.
+
 ## Tools
 
 The tool set follows the Mastra Code names:

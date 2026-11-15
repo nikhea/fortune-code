@@ -27,6 +27,9 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .cache
 *.tsbuildinfo
 
+# the dev server writes its built assets here
+src/mastra/public
+
 # IntelliJ based IDEs
 .idea
 
